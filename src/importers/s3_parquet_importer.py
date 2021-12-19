@@ -32,7 +32,6 @@ class S3ParquetImporter(DataImporterInterface):
       boto3_session=self.boto3_session,
       schema_evolution=True,
       mode='overwrite',
-      max_rows_by_file=100_000,
     )
 
   def has_dataset(self, name: str):
