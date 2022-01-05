@@ -3,6 +3,7 @@ import boto3
 import json
 import utils.env as env
 
+
 def load_secrets():
   secret_name = env.get_required('SECRET_NAME')
   region_name = env.get_required('AWS_REGION')
@@ -19,4 +20,4 @@ def load_secrets():
   secrets = json.loads(get_secret_value_response['SecretString'])
 
   for key in secrets:
-      env.set_env(key, secrets[key])
+    env.set_env(key, secrets[key])

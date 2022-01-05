@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class DataTypes(Enum):
   BOOL = 1
   INT = 2

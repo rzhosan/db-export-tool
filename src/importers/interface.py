@@ -1,12 +1,13 @@
 import pandas as pd
-import pandas as pd
-from models.data_types import DataTypes
 from contextlib import AbstractContextManager
 
+
 class DataImporterInterface(AbstractContextManager):
-  def save_dataset(self, name: str, dataset: pd.DataFrame, data_types):
-    """Saves the whole panda's dataframe"""
+  def read_dataset(self, name: str) -> pd.DataFrame:
     pass
 
-  def has_dataset(self, name: str):
+  def overwrite_dataset(self, name: str, data: pd.DataFrame, data_types: dict) -> None:
+    pass
+
+  def append_dataset(self, name: str, data: pd.DataFrame, data_types: dict) -> None:
     pass

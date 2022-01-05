@@ -5,37 +5,59 @@ import utils.env as env
 from models.data_types import DataTypes
 from importers.interface import DataImporterInterface
 
+
 class S3ParquetImporter(DataImporterInterface):
   def __init__(self) -> None:
     self.s3_path = env.get_required('S3_PATH')
     self.glue_database_name = env.get_required('GLUE_DATABASE_NAME')
-    self.boto3_session = boto3.Session(region_name=env.get_required('AWS_REGION'))
+    self.boto3_session = boto3.Session(
+        region_name=env.get_required('AWS_REGION'))
 
   def __enter__(self):
     return self
-    
+
   def __exit__(self, exc_type, exc_value, exc_tb):
     pass
 
-  def save_dataset(self, name: str, dataset: pd.DataFrame, data_types) -> None:
-    """Saves the whole panda's dataframe"""
+  def overwrite_dataset(self, name: str, data: pd.DataFrame, data_types: dict) -> None:
+    if data.empty:
+      wr.s3.delete_objects(f'{self.s3_path}/{name}')
+      return
+
     dtype = self.__map_date_types(data_types)
 
     wr.s3.to_parquet(
-      df=dataset,
-      path=f'{self.s3_path}/{name}',
-      dataset=True,
-      dtype=dtype,
-      index=False,
-      database=self.glue_database_name,
-      table=name,
-      boto3_session=self.boto3_session,
-      schema_evolution=True,
-      mode='overwrite',
+        df=data,
+        path=f'{self.s3_path}/{name}',
+        dataset=True,
+        dtype=dtype,
+        index=False,
+        database=self.glue_database_name,
+        table=name,
+        boto3_session=self.boto3_session,
+        mode='overwrite',
+    )
+
+  def append_dataset(self, name: str, data: pd.DataFrame, data_types: dict) -> None:
+    dtype = self.__map_date_types(data_types)
+
+    wr.s3.to_parquet(
+        df=data,
+        path=f'{self.s3_path}/{name}',
+        dataset=True,
+        dtype=dtype,
+        index=False,
+        database=self.glue_database_name,
+        table=name,
+        boto3_session=self.boto3_session,
+        mode='append',
     )
 
   def has_dataset(self, name: str):
     return wr.catalog.does_table_exist(database=self.glue_database_name, table=name, boto3_session=self.boto3_session)
+
+  def read_dataset(self, name: str):
+    return wr.s3.read_parquet(path=f'{self.s3_path}/{name}/', dataset=True)
 
   def __map_date_types(self, data_types):
     result = {}
@@ -44,6 +66,7 @@ class S3ParquetImporter(DataImporterInterface):
       result[name] = data_types_dict[data_types[name]]
 
     return result
+
 
 data_types_dict = {
     DataTypes.INT: 'int',
