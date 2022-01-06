@@ -16,7 +16,7 @@ class SqlServerDataExporter(DataExporterInterface):
     database = env.get_required('SQL_DATABASE')
     username = env.get_required('SQL_USERNAME')
     password = env.get_required('SQL_PASSWORD')
-    chunk_size = int(env.get_optional('CHUNK_SIZE', '100_000'))
+    chunk_size = int(env.get_optional('CHUNK_SIZE', '50_000'))
 
     self.__connection_string = f'Driver={{{driver}}};Server={host},{port};Database={database};UID={username};PWD={password}'
     self.__chunk_size = chunk_size

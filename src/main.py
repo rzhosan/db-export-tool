@@ -3,7 +3,7 @@ from importers import get_importer
 from timeit import default_timer as timer
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
 
 def export(config={}):
