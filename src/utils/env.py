@@ -14,7 +14,7 @@ def get_required(env_name):
   return env
 
 
-def get_optional(env_name, default):
+def get_optional(env_name, default=None):
   return os.getenv(env_name, default)
 
 

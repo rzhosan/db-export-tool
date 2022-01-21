@@ -9,7 +9,7 @@ from importers.interface import DataImporterInterface
 class LocalParquetImporter(DataImporterInterface):
   def __init__(self) -> None:
     self.__folder = env.get_optional('IMPORT_FOLDER', '../.data/local_parquet_importer')
-    self.__chunk_size = int(env.get_optional('PARQUET_CHUNK_SIZE', '10000'))
+    self.__chunk_size = int(env.get_optional('CHUNK_SIZE', '10000'))
 
   def read_dataset(self, name: str) -> pd.DataFrame:
     folder = os.path.join(self.__folder, name)

@@ -2,6 +2,7 @@ from exporters import get_exporter
 from importers import get_importer
 from timeit import default_timer as timer
 import logging
+from utils import env
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
@@ -9,6 +10,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(mes
 def export(config={}):
   errors = 0
   max_errors = 5
+  partition_column = config.get('partition_column', env.get_optional('PARTITION_COLUMN'))
+  partition_value = config.get('partition_value', env.get_optional('PARTITION_VALUE'))
 
   with get_exporter('sql_server') as exporter, get_importer('s3_parquet') as importer:
     all_datasets = exporter.get_all_datasets(config).sort_values('name')
@@ -23,10 +26,13 @@ def export(config={}):
         records_count = 0
 
         for df in dfs:
+          if partition_column:
+            df[partition_column] = partition_value
+
           if records_count == 0:
-            importer.overwrite_dataset(dataset["name"], df, data_types)
+            importer.overwrite_dataset(dataset["name"], df, data_types, partition_column)
           else:
-            importer.append_dataset(dataset["name"], df, data_types)
+            importer.append_dataset(dataset["name"], df, data_types, partition_column)
 
           records_count += len(df)
 
