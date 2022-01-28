@@ -26,7 +26,7 @@ class S3ParquetImporter(DataImporterInterface):
       partition_column: str = None,
   ) -> None:
     if data.empty:
-      wr.s3.delete_objects(f'{self.s3_path}/{name}')
+      # wr.s3.delete_objects(f'{self.s3_path}/{name}')
       return
 
     dtype = self.__map_date_types(data_types)
