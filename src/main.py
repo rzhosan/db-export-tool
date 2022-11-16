@@ -10,10 +10,12 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(mes
 def export(config={}):
   errors = 0
   max_errors = 5
+  exporter_name = config.get('exporter') or env.get_required('EXPORTER_NAME')
+  importer_name = config.get('importer') or env.get_required('IMPORTER_NAME')
   partition_column = config.get('partition_column', env.get_optional('PARTITION_COLUMN'))
   partition_value = config.get('partition_value', env.get_optional('PARTITION_VALUE'))
 
-  with get_exporter('sql_server') as exporter, get_importer('s3_parquet') as importer:
+  with get_exporter(exporter_name) as exporter, get_importer(importer_name) as importer:
     all_datasets = exporter.get_all_datasets(config).sort_values('name')
     logging.info(f'Found {all_datasets["name"].count()} datasets. Exporting them...')
 

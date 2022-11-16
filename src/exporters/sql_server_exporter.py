@@ -10,15 +10,8 @@ class SqlServerDataExporter(DataExporterInterface):
   """A data exporter implementation that allow to export all tables from SQL Server instance"""
 
   def __init__(self) -> None:
-    driver = env.get_optional('SQL_DRIVER', 'ODBC Driver 17 for SQL Server')
-    host = env.get_required('SQL_HOST')
-    port = env.get_optional('SQL_PORT', '1433')
-    database = env.get_required('SQL_DATABASE')
-    username = env.get_required('SQL_USERNAME')
-    password = env.get_required('SQL_PASSWORD')
     chunk_size = int(env.get_optional('CHUNK_SIZE', '50_000'))
-
-    self.__connection_string = f'Driver={{{driver}}};Server={host},{port};Database={database};UID={username};PWD={password}'
+    self.__connection_string = env.get_required("SQL_SERVER_CONNECTION_STRING")
     self.__chunk_size = chunk_size
 
   def __enter__(self):
