@@ -1,10 +1,15 @@
 # Db Exporting Tool
+
 This is the repository for a database exporting tool.
-- Currently, only the SQL Server to AWS S3 + Glue export type is supported.
-- A tool allows to capture data changes and store them in a specific table format
-- Data is stored in a `parquet` format
+
+- Currently, the following databases are supported:
+  - Local parquet, PostgreSQL, SQL Server as source databases (to copy data from)
+  - Local parquet, s3 + Athena, MySQL as the destination databases (to copy data to)
 
 ## Prerequisites
+
+Although, it's possible to use any python environment, the instructions cover the anaconda usage.
+
 To work locally, open condas terminal, go to a project folder, create a new virtual environments and install necessary packages:
 
 ```
