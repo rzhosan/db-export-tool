@@ -1,16 +1,13 @@
 import pandas as pd
-import awswrangler as wr
-import boto3
 import utils.env as env
 from models.data_types import DataTypes
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, types
 from importers.interface import DataImporterInterface
 
 
 class MySqlImporter(DataImporterInterface):
   def __init__(self) -> None:
     self.__connection_string = env.get_required('MYSQL_CONNECTION_STRING')
-    self.__chunk_size = int(env.get_optional('CHUNK_SIZE', '50_000'))
 
   def __enter__(self):
     self.__sql_connection = create_engine(self.__connection_string)
@@ -24,24 +21,20 @@ class MySqlImporter(DataImporterInterface):
       name: str,
       data: pd.DataFrame,
       data_types: dict,
-      partition_column: str = None,
+      **kwargs: dict,
   ) -> None:
-    if data.empty:
-      # wr.s3.delete_objects(f'{self.s3_path}/{name}')
-      return
-
-    # dtype = self.__map_date_types(data_types)
-    data.to_sql(name, con=self.__sql_connection, if_exists='replace')
+    dtype = self.__map_date_types(data_types)
+    data.to_sql(name, con=self.__sql_connection, if_exists='replace', index=False, dtype=dtype)
 
   def append_dataset(
       self,
       name: str,
       data: pd.DataFrame,
       data_types: dict,
-      partition_column: str = None,
+      **kwargs: dict,
   ) -> None:
-    # dtype = self.__map_date_types(data_types)
-    data.to_sql(name, con=self.__sql_connection, if_exists='append')
+    dtype = self.__map_date_types(data_types)
+    data.to_sql(name, con=self.__sql_connection, if_exists='append', index=False, dtype=dtype)
 
   def __map_date_types(self, data_types):
     result = {}
@@ -53,14 +46,15 @@ class MySqlImporter(DataImporterInterface):
 
 
 data_types_dict = {
-    DataTypes.INT: 'int',
-    DataTypes.BIGINT: 'bigint',
-    DataTypes.BYTE_ARRAY: 'binary',
-    DataTypes.BOOL: 'boolean',
-    DataTypes.STRING:	'string',
-    DataTypes.FLOAT: 'float',
-    DataTypes.DOUBLE: 'double',
-    DataTypes.DECIMAL: 'double',
-    DataTypes.DATE: 'date',
-    DataTypes.DATETIME: 'timestamp',
+    DataTypes.INT: types.INTEGER,
+    DataTypes.BIGINT: types.BIGINT,
+    DataTypes.BYTE_ARRAY: types.BINARY,
+    DataTypes.BOOL: types.BOOLEAN,
+    DataTypes.STRING:	types.NVARCHAR(255),
+    DataTypes.FLOAT: types.FLOAT,
+    DataTypes.DOUBLE: types.REAL,
+    DataTypes.DECIMAL: types.DECIMAL,
+    DataTypes.DATE: types.DATE,
+    DataTypes.DATETIME: types.DATETIME,
+    DataTypes.JSONB: types.JSON,
 }

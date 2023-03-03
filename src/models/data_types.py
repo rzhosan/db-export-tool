@@ -12,3 +12,4 @@ class DataTypes(Enum):
   DECIMAL = 8
   DATE = 9
   DATETIME = 10
+  JSONB = 11

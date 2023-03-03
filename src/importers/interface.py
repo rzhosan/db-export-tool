@@ -6,8 +6,8 @@ class DataImporterInterface(AbstractContextManager):
   def read_dataset(self, name: str) -> pd.DataFrame:
     pass
 
-  def overwrite_dataset(self, name: str, data: pd.DataFrame, data_types: dict) -> None:
+  def overwrite_dataset(self, name: str, data: pd.DataFrame, data_types: dict, **kwargs) -> None:
     pass
 
-  def append_dataset(self, name: str, data: pd.DataFrame, data_types: dict) -> None:
+  def append_dataset(self, name: str, data: pd.DataFrame, data_types: dict, **kwargs) -> None:
     pass

@@ -2,6 +2,7 @@ from exporters import get_exporter
 from importers import get_importer
 from timeit import default_timer as timer
 import logging
+import json
 from utils import env
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
@@ -32,9 +33,9 @@ def export(config={}):
             df[partition_column] = partition_value
 
           if records_count == 0:
-            importer.overwrite_dataset(dataset["name"], df, data_types, partition_column)
+            importer.overwrite_dataset(dataset["name"], df, data_types, partition_column=partition_column)
           else:
-            importer.append_dataset(dataset["name"], df, data_types, partition_column)
+            importer.append_dataset(dataset["name"], df, data_types, partition_column=partition_column)
 
           records_count += len(df)
 
@@ -54,4 +55,10 @@ def export(config={}):
 
 
 if __name__ == '__main__':
-  export()
+  if env.get_optional("SECRETS"):
+    for key, value in json.loads(env.get_optional("SECRETS")).items():
+      env.set_env(key, value)
+
+  config = json.loads(env.get_optional("CONFIG")) if env.get_optional("CONFIG") else {}
+
+  export(config)

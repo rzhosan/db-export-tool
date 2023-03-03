@@ -64,5 +64,7 @@ data_types_dict = {
     'timestamp without time zone': DataTypes.DATETIME,
     'boolean': DataTypes.BOOL,
     'numeric': DataTypes.DOUBLE,
+    'bigint': DataTypes.BIGINT,
+    'jsonb': DataTypes.JSONB,
     'USER-DEFINED': DataTypes.STRING,
 }
