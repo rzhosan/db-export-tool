@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(mes
 
 def export(config={}):
   errors = 0
-  max_errors = 5
+  max_errors = int(env.get_optional("MAX_ERRORS_COUNT", "1"))
   exporter_name = config.get('exporter') or env.get_required('EXPORTER_NAME')
   importer_name = config.get('importer') or env.get_required('IMPORTER_NAME')
   partition_column = config.get('partition_column', env.get_optional('PARTITION_COLUMN'))
@@ -50,6 +50,7 @@ def export(config={}):
         logging.error(e, exc_info=True)
         errors += 1
         if errors >= max_errors:
+
           logging.fatal('Too many errors occurred. Exiting...')
           return
 
